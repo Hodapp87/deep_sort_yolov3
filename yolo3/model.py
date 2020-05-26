@@ -13,6 +13,10 @@ from keras.regularizers import l2
 
 from yolo3.utils import compose
 
+# Allow TF to increase GPU memory usage dynamically to prevent cuBLAS init problems.
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.Session(config=config)
 
 @wraps(Conv2D)
 def DarknetConv2D(*args, **kwargs):
