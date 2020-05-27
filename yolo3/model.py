@@ -4,7 +4,7 @@ from functools import wraps
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import backend as K
+from tensorflow.compat.v1.keras import backend as K
 
 from yolo3.utils import compose
 

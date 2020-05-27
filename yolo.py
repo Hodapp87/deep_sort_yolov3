@@ -12,7 +12,7 @@ from timeit import default_timer as timer  ### to calculate FPS
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import backend as K
+from tensorflow.compat.v1.keras import backend as K
 from PIL import Image, ImageFont, ImageDraw
 
 from yolo3.model import yolo_eval
