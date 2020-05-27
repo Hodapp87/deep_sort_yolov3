@@ -7,20 +7,6 @@ import cv2
 import tensorflow as tf
 
 
-def _run_in_batches(f, data_dict, out, batch_size):
-    data_len = len(out)
-    num_batches = int(data_len / batch_size)
-
-    s, e = 0, 0
-    for i in range(num_batches):
-        s, e = i * batch_size, (i + 1) * batch_size
-        batch_data_dict = {k: v[s:e] for k, v in data_dict.items()}
-        out[s:e] = f(batch_data_dict)
-    if e < len(out):
-        batch_data_dict = {k: v[e:] for k, v in data_dict.items()}
-        out[e:] = f(batch_data_dict)
-
-
 def extract_image_patch(image, bbox, patch_shape):
     """Extract image patch from bounding box.
 
@@ -72,8 +58,8 @@ class ImageEncoder(object):
 
     def __init__(self, checkpoint_filename, input_name="images",
                  output_name="features"):
-        self.session = tf.Session()
-        with tf.gfile.GFile(checkpoint_filename, "rb") as file_handle:
+        self.session = tf.compat.v1.Session()
+        with tf.io.gfile.GFile(checkpoint_filename, "rb") as file_handle:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(file_handle.read())
         tf.import_graph_def(graph_def, name="net")
@@ -89,11 +75,15 @@ class ImageEncoder(object):
 
     def __call__(self, data_x, batch_size=32):
         out = np.zeros((len(data_x), self.feature_dim), np.float32)
-        _run_in_batches(
-            lambda x: self.session.run(self.output_var, feed_dict=x),
-            {self.input_var: data_x}, out, batch_size)
+        data_len = len(out)
+        num_batches = int(data_len / batch_size)
+        s, e = 0, 0
+        for i in range(num_batches):
+            s, e = i * batch_size, (i + 1) * batch_size
+            out[s:e] = self.session.run(self.output_var, feed_dict={self.input_var: data_x[s:e]})
+        if e < len(out):
+            out[e:] = self.session.run(self.output_var, feed_dict={self.input_var: data_x[e:]})
         return out
-
 
 def create_box_encoder(model_filename, input_name="images",
                        output_name="features", batch_size=32):

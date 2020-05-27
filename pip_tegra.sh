@@ -16,4 +16,4 @@ pip3 install Cython
 TMPDIR=./tmp pip3 install \
     --pre --no-cache-dir --extra-index-url \
     https://developer.download.nvidia.com/compute/redist/jp/v44 \
-    tensorflow numpy sklearn Pillow imutils keras
+    tensorflow numpy sklearn Pillow imutils

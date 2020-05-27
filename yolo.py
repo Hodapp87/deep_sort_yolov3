@@ -11,8 +11,8 @@ from timeit import time
 from timeit import default_timer as timer  ### to calculate FPS
 
 import numpy as np
-from keras import backend as K
-from keras.models import load_model
+import tensorflow as tf
+from tensorflow.keras import backend as K
 from PIL import Image, ImageFont, ImageDraw
 
 from yolo3.model import yolo_eval
@@ -51,7 +51,7 @@ class YOLO(object):
         model_path = os.path.expanduser(self.model_path)
         assert model_path.endswith('.h5'), 'Keras model must be a .h5 file.'
 
-        self.yolo_model = load_model(model_path, compile=False)
+        self.yolo_model = tf.keras.models.load_model(model_path, compile=False)
         print('{} model, anchors, and classes loaded.'.format(model_path))
 
         # Generate colors for drawing bounding boxes.
